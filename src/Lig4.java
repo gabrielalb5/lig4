@@ -4,11 +4,15 @@ public class Lig4 {
     static final int LINHAS = 6;
     static final int COLUNAS = 7;
     static Tabuleiro tabuleiro = new Tabuleiro(LINHAS,COLUNAS);
-    
+    static Placar placar = new Placar();
+
     public static void main(String[] args) {
         Scanner leitor = new Scanner(System.in);
         boolean jogoAtivo = true;
-
+        
+        placar.verificarSalvo(leitor);
+        placar.exibirPlacar();
+        
         while (jogoAtivo) {
             char jogadorAtual = 'X';
             tabuleiro.criarTabuleiro();
@@ -43,6 +47,7 @@ public class Lig4 {
                 if(tabuleiro.verificaVitoria(linha, colunaEscolhida-1, jogadorAtual)){
                     tabuleiro.imprimirTabuleiro();
                     System.out.println("Jogador " + jogadorAtual + " venceu!");
+                    placar.adicionarPonto(jogadorAtual);
                     break;
                 }
 
@@ -54,7 +59,8 @@ public class Lig4 {
 
                 jogadorAtual = (jogadorAtual == 'X') ? 'O' : 'X';
             }
-
+            placar.exibirPlacar();
+            
             boolean respostaValida = false;
             while (!respostaValida) {
                 System.out.print("\nDeseja jogar novamente? (S/N): ");
@@ -69,6 +75,21 @@ public class Lig4 {
                     }
                     default -> System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
                 }
+            }
+        }
+        
+        boolean respostaValida = false;
+        while (!respostaValida) {
+            System.out.print("\nDeseja excluir o placar? (S/N): ");
+            String resposta = leitor.next().trim().toUpperCase();
+
+            switch (resposta) {
+                case "N" -> respostaValida = true;
+                case "S" -> {
+                    respostaValida = true;
+                    placar.excluirPlacar();
+                }
+                default -> System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
             }
         }
 
