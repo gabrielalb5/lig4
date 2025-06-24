@@ -1,3 +1,7 @@
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Lig4 {
@@ -5,9 +9,19 @@ public class Lig4 {
     static final int COLUNAS = 7;
     static Tabuleiro tabuleiro = new Tabuleiro(LINHAS,COLUNAS);
     static Placar placar = new Placar();
+    private Scanner leitor;
+        
+    private Socket servidorConexao;
+    private ObjectInputStream servidorEntrada;
+    private ObjectOutputStream servidorSaida;
 
-    public static void main(String[] args) {
-        Scanner leitor = new Scanner(System.in);
+    public Lig4() throws Exception{
+        leitor = new Scanner(System.in);
+        conectar();
+        jogar();
+    }
+    
+    public void jogar(){
         boolean jogoAtivo = true;
         
         placar.verificarSalvo(leitor);
@@ -16,7 +30,7 @@ public class Lig4 {
         while (jogoAtivo) {
             char jogadorAtual = 'X';
             tabuleiro.criarTabuleiro();
-
+            
             boolean partidaAtiva = true;
 
             while(partidaAtiva){
@@ -94,5 +108,19 @@ public class Lig4 {
         }
 
         leitor.close();
+    }
+    
+    private void conectar() throws Exception {
+        
+        servidorConexao = new Socket(InetAddress.getByName(Config.getIp()),Config.getPorta());
+        
+        servidorSaida = new ObjectOutputStream(servidorConexao.getOutputStream());
+        servidorSaida.flush();
+        
+        servidorEntrada = new ObjectInputStream(servidorConexao.getInputStream());
+        
+        String mensagem = (String) servidorEntrada.readObject();//"X;true"; // receber essa mensagem do servidor
+        String[] info = mensagem.split(";");
+        System.out.println(info[0]);
     }
 }
