@@ -10,68 +10,122 @@ public class Lig4 {
     static Tabuleiro tabuleiro = new Tabuleiro(LINHAS,COLUNAS);
     static Placar placar = new Placar();
     private Scanner leitor;
-        
+    
     private Socket servidorConexao;
     private ObjectInputStream servidorEntrada;
     private ObjectOutputStream servidorSaida;
 
+    private boolean suaVez;
+    private char peca;
+
+    
     public Lig4() throws Exception{
         leitor = new Scanner(System.in);
         conectar();
         jogar();
     }
     
-    public void jogar(){
+    public void jogar() throws Exception{
         boolean jogoAtivo = true;
         
         placar.verificarSalvo(leitor);
         placar.exibirPlacar();
         
-        while (jogoAtivo) {
-            char jogadorAtual = 'X';
-            tabuleiro.criarTabuleiro();
-            
+        while (jogoAtivo){
+            tabuleiro.criarTabuleiro();            
             boolean partidaAtiva = true;
-
+            int colunaEscolhida = -1;
+            String mensagem;
+            
             while(partidaAtiva){
-                tabuleiro.imprimirTabuleiro();
-                System.out.print("Jogador "+jogadorAtual+" escolha a coluna (1 a "+COLUNAS+"): ");
+                if(!isSuaVez()){
+                    tabuleiro.imprimirTabuleiro();
+                    System.out.println("Aguarde sua vez.");
+                    
+                    mensagem = (String) servidorEntrada.readObject();
+                    String[] info = mensagem.split(";");
+                    char jogadorAtual = info[1].charAt(0);
+                                    
+                    try{
+                        colunaEscolhida = Integer.parseInt(info[0]);
+                    }catch(Exception e){
+                        System.out.println("Entrada inválida. Digite um número de 1 a "+COLUNAS+".");
+                        leitor.nextLine();
+                        continue;
+                    }
 
-                int colunaEscolhida;
-                try{
-                    colunaEscolhida = leitor.nextInt();
-                }catch(Exception e){
-                    System.out.println("Entrada inválida. Digite um número de 1 a "+COLUNAS+".");
-                    leitor.nextLine();
-                    continue;
-                }
+                    if(colunaEscolhida<1 || colunaEscolhida>COLUNAS){
+                        System.out.println("Coluna fora do intervalo. Tente novamente.");
+                        continue;
+                    }
+                        
+                    int linha = tabuleiro.jogarPeca(colunaEscolhida, jogadorAtual);
 
-                if(colunaEscolhida<1 || colunaEscolhida>COLUNAS){
-                    System.out.println("Coluna fora do intervalo. Tente novamente.");
-                    continue;
-                }
+                    if(linha == -1) {
+                        System.out.println("Essa coluna está cheia. Escolha outra.");
+                        continue;
+                    }
 
-                int linha = tabuleiro.jogarPeca(colunaEscolhida, jogadorAtual);
+                    if(tabuleiro.verificaVitoria(linha, colunaEscolhida-1, jogadorAtual)){
+                        tabuleiro.imprimirTabuleiro();
+                        System.out.println("Jogador " + jogadorAtual + " venceu!");
+                        placar.adicionarPonto(jogadorAtual);
+                        break;
+                    }
 
-                if(linha == -1) {
-                    System.out.println("Essa coluna está cheia. Escolha outra.");
-                    continue;
+                    if(tabuleiro.tabuleiroCheio()){
+                        tabuleiro.imprimirTabuleiro();
+                        System.out.println("Empate! O tabuleiro está cheio.");
+                        break;
+                    }
+                    
+                    setSuaVez(true);
                 }
                 
-                if(tabuleiro.verificaVitoria(linha, colunaEscolhida-1, jogadorAtual)){
+                boolean jogado = false;
+                while(partidaAtiva && !jogado){
                     tabuleiro.imprimirTabuleiro();
-                    System.out.println("Jogador " + jogadorAtual + " venceu!");
-                    placar.adicionarPonto(jogadorAtual);
-                    break;
+                    System.out.print("Jogador "+getPeca()+" escolha a coluna (1 a "+COLUNAS+"): ");
+
+                    try{
+                        colunaEscolhida = leitor.nextInt();
+                    }catch(Exception e){
+                        System.out.println("Entrada inválida. Digite um número de 1 a "+COLUNAS+".");
+                        leitor.nextLine();
+                        continue;
+                    }
+
+                    if(colunaEscolhida<1 || colunaEscolhida>COLUNAS){
+                        System.out.println("Coluna fora do intervalo. Tente novamente.");
+                        continue;
+                    }
+
+                    int linha = tabuleiro.jogarPeca(colunaEscolhida, getPeca());
+
+                    if(linha == -1) {
+                        System.out.println("Essa coluna está cheia. Escolha outra.");
+                        continue;
+                    }
+
+                    if(tabuleiro.verificaVitoria(linha, colunaEscolhida-1, getPeca())){
+                        tabuleiro.imprimirTabuleiro();
+                        System.out.println("Jogador " + getPeca() + " venceu!");
+                        placar.adicionarPonto(getPeca());
+                        break;
+                    }
+
+                    if(tabuleiro.tabuleiroCheio()){
+                        tabuleiro.imprimirTabuleiro();
+                        System.out.println("Empate! O tabuleiro está cheio.");
+                        break;
+                    }
+                    
+                    setSuaVez(false);
+                    jogado = true;
+                    mensagem = colunaEscolhida + ";" + getPeca();
+                    servidorSaida.writeObject(mensagem);
                 }
 
-                if(tabuleiro.tabuleiroCheio()){
-                    tabuleiro.imprimirTabuleiro();
-                    System.out.println("Empate! O tabuleiro está cheio.");
-                    break;
-                }
-
-                jogadorAtual = (jogadorAtual == 'X') ? 'O' : 'X';
             }
             placar.exibirPlacar();
             
@@ -119,8 +173,30 @@ public class Lig4 {
         
         servidorEntrada = new ObjectInputStream(servidorConexao.getInputStream());
         
-        String mensagem = (String) servidorEntrada.readObject();//"X;true"; // receber essa mensagem do servidor
+        String mensagem = (String) servidorEntrada.readObject();
         String[] info = mensagem.split(";");
-        System.out.println(info[0]);
+        setPeca(info[0].charAt(0));
+        
+        if(info[1].equals("true")){
+            setSuaVez(true);
+        }else{
+            setSuaVez(false);
+        }
+    }
+    
+    public boolean isSuaVez() {
+        return suaVez;
+    }
+
+    public void setSuaVez(boolean suaVez) {
+        this.suaVez = suaVez;
+    }
+
+    public char getPeca() {
+        return peca;
+    }
+
+    public void setPeca(char peca) {
+        this.peca = peca;
     }
 }

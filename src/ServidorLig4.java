@@ -36,10 +36,10 @@ public class ServidorLig4 {
         ObjectInputStream saidaJogadorO;
         saidaJogadorO = new ObjectInputStream( jogadorO.getInputStream() );
         
-        //Thread thread1 = new Thread(new GerenciadorDeJogadas(saidaJogadorX,entradaJogadorO));
-        //Thread thread2 = new Thread(new GerenciadorDeJogadas(saidaJogadorO,entradaJogadorX));
+        Thread thread1 = new Thread(new GerenciadorDeJogadas(saidaJogadorX,entradaJogadorO));
+        Thread thread2 = new Thread(new GerenciadorDeJogadas(saidaJogadorO,entradaJogadorX));
         
-        //thread1.start();
-        //thread2.start();
+        thread1.start();
+        thread2.start();
     }
 }
