@@ -101,35 +101,12 @@ public class Placar{
         }
     }
 
-     private void reiniciarPlacar(){
-        pontos.put('X',0);
-        pontos.put('O',0);
-        salvarPlacar();
-    }
-
-    public boolean verificarSalvo(Scanner leitor){
+    public boolean verificarSalvo(){
         File arquivo = new File(nomeArquivo);
-        if(!arquivo.exists()){
-            return true;
+        boolean existe = false;
+        if(arquivo.exists()){
+            existe = true;
         }
-
-        while(true){
-            exibirPlacar();
-            System.out.print("Existe um placar salvo. Deseja apagar o placar antes de começar? (S/N): ");
-            String resposta = leitor.next().trim().toUpperCase();
-
-            switch (resposta) {
-                case "S" -> {
-                    excluirPlacar();
-                    reiniciarPlacar();
-                    return true;
-                }
-                case "N" -> {
-                    System.out.println("Mantendo placar atual.");
-                    return true;
-                }
-                default -> System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
-            }
-        }
+        return existe;
     }
 }

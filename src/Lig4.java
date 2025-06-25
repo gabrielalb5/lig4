@@ -18,7 +18,6 @@ public class Lig4 {
     private boolean suaVez;
     private char peca;
 
-    
     public Lig4() throws Exception{
         leitor = new Scanner(System.in);
         conectar();
@@ -27,15 +26,41 @@ public class Lig4 {
     
     public void jogar() throws Exception{
         boolean jogoAtivo = true;
-        
-        placar.verificarSalvo(leitor);
+        String mensagem;
+
         placar.exibirPlacar();
-        
+        if(placar.verificarSalvo()){
+            System.out.print("\nEncontramos um placar salvo\nDeseja manter o placar? (S/N): ");
+            String resposta = leitor.next().trim().toUpperCase();
+
+            while(!resposta.equals("S") && !resposta.equals("N")){
+                System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
+                System.out.print("\nDeseja manter o placar? (S/N): ");
+                resposta = leitor.next().trim().toUpperCase();
+            }
+
+            servidorSaida.writeObject("MANTERPLACAR;"+resposta);
+
+            mensagem = (String) servidorEntrada.readObject();
+            if(!mensagem.startsWith("MANTERPLACAR;")){
+                System.out.println("Mensagem inesperada do servidor.");
+            }else{
+                String[] decisaoOutro = mensagem.split(";");
+                if(resposta.equals("S") && decisaoOutro[1].equals("S")){
+                    System.out.println("Placar mantido por decisão mútua.");
+                }else{
+                    if(getPeca() == 'X'){
+                        placar.excluirPlacar();
+                    }
+                    System.out.println("Um jogador requisitou que o placar fosse reiniciado.");
+                }
+            }
+        }
+
         while (jogoAtivo){
             tabuleiro.criarTabuleiro();            
             boolean partidaAtiva = true;
             int colunaEscolhida = -1;
-            String mensagem;
             
             while(partidaAtiva){
                 if(!isSuaVez()){
@@ -43,6 +68,24 @@ public class Lig4 {
                     System.out.println("Aguarde sua vez.");
                     
                     mensagem = (String) servidorEntrada.readObject();
+
+                    if(mensagem.startsWith("FIM;")){
+                        String[] fim = mensagem.split(";");
+                        int colunaVitoria = Integer.parseInt(fim[3]);
+                        char jogadorFinal = fim[2].charAt(0);
+                        
+                        tabuleiro.jogarPeca(colunaVitoria, jogadorFinal);
+                        tabuleiro.imprimirTabuleiro();
+                        if(fim[1].equals("EMPATE")){
+                            System.out.println("Empate! O tabuleiro está cheio.");
+                        }else{
+                            System.out.println("Você perdeu :(\nVitória do jogador " + jogadorFinal + ".");
+                            placar.adicionarPonto(jogadorFinal);
+                        }
+                        partidaAtiva = false;
+                        continue;
+                    }
+
                     String[] info = mensagem.split(";");
                     char jogadorAtual = info[1].charAt(0);
                                     
@@ -109,14 +152,18 @@ public class Lig4 {
 
                     if(tabuleiro.verificaVitoria(linha, colunaEscolhida-1, getPeca())){
                         tabuleiro.imprimirTabuleiro();
-                        System.out.println("Jogador " + getPeca() + " venceu!");
+                        System.out.println("Parabéns, jogador " + getPeca() + "!\nVocê venceu :)");
                         placar.adicionarPonto(getPeca());
+                        servidorSaida.writeObject("FIM;VITORIA;"+getPeca()+";"+colunaEscolhida);
+                        partidaAtiva = false;
                         break;
                     }
 
                     if(tabuleiro.tabuleiroCheio()){
                         tabuleiro.imprimirTabuleiro();
                         System.out.println("Empate! O tabuleiro está cheio.");
+                        servidorSaida.writeObject("FIM;EMPATE;"+getPeca()+";"+colunaEscolhida);
+                        partidaAtiva = false;
                         break;
                     }
                     
@@ -129,35 +176,54 @@ public class Lig4 {
             }
             placar.exibirPlacar();
             
-            boolean respostaValida = false;
-            while (!respostaValida) {
+            System.out.print("\nDeseja jogar novamente? (S/N): ");
+            String resposta = leitor.next().trim().toUpperCase();
+            while(!resposta.equals("S") && !resposta.equals("N")){
+                System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
                 System.out.print("\nDeseja jogar novamente? (S/N): ");
-                String resposta = leitor.next().trim().toUpperCase();
+                resposta = leitor.next().trim().toUpperCase();
+            }
 
-                switch (resposta) {
-                    case "S" -> respostaValida = true;
-                    case "N" -> {
-                        jogoAtivo = false;
-                        respostaValida = true;
-                        System.out.println("Obrigado por jogar!");
-                    }
-                    default -> System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
-                }
+            servidorSaida.writeObject("REINICIAR;" + resposta);
+
+            mensagem = (String) servidorEntrada.readObject();
+            if(!mensagem.startsWith("REINICIAR;")){
+                System.out.println("Mensagem inesperada do servidor.");
+                break;
+            }
+            String decisaoOutro[] = mensagem.split(";");
+
+            if(resposta.equals("S") && decisaoOutro[1].equals("S")){
+                continue;
+            }else{
+                jogoAtivo = false;
+                System.out.println("Um jogador não quis continuar. Fim de jogo.");
             }
         }
         
-        boolean respostaValida = false;
-        while (!respostaValida) {
-            System.out.print("\nDeseja excluir o placar? (S/N): ");
-            String resposta = leitor.next().trim().toUpperCase();
+        System.out.print("\nDeseja excluir o placar? (S/N): ");
+        String resposta = leitor.next().trim().toUpperCase();
 
-            switch (resposta) {
-                case "N" -> respostaValida = true;
-                case "S" -> {
-                    respostaValida = true;
+        while(!resposta.equals("S") && !resposta.equals("N")){
+            System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
+            System.out.print("\nDeseja excluir o placar? (S/N): ");
+            resposta = leitor.next().trim().toUpperCase();
+        }
+
+        servidorSaida.writeObject("EXCLUIRPLACAR;"+resposta);
+
+        mensagem = (String) servidorEntrada.readObject();
+        if(!mensagem.startsWith("EXCLUIRPLACAR;")){
+            System.out.println("Mensagem inesperada do servidor.");
+        }else{
+            String[] decisaoOutro = mensagem.split(";");
+            if(resposta.equals("S") && decisaoOutro[1].equals("S")){
+                if(getPeca() == 'X'){
                     placar.excluirPlacar();
                 }
-                default -> System.out.println("Não entendi. Digite 'S' para sim ou 'N' para não.");
+                System.out.println("Placar excluído por decisão mútua.");
+            }else{
+                System.out.println("Um jogador requisitou que o placar fosse mantido.");
             }
         }
 
