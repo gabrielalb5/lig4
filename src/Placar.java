@@ -94,10 +94,10 @@ public class Placar{
             if(arquivo.delete()){
                 System.out.println("Placar final apagado.");
             }else{
-                System.out.println("Não foi possível apagar o placar.");
+                System.out.println("Não foi possível apagar o placar. (Talvez já tenha sido apagado pelo outro jogador)");
             }
         }else{
-            System.out.println("Arquivo de placar não encontrado.");
+            System.out.println("Arquivo de placar não encontrado. (Talvez já tenha sido apagado)");
         }
     }
 

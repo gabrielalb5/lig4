@@ -49,9 +49,7 @@ public class Lig4 {
                 if(resposta.equals("S") && decisaoOutro[1].equals("S")){
                     System.out.println("Placar mantido por decisão mútua.");
                 }else{
-                    if(getPeca() == 'X'){
-                        placar.excluirPlacar();
-                    }
+                    placar.excluirPlacar();
                     System.out.println("Um jogador requisitou que o placar fosse reiniciado.");
                 }
             }
@@ -218,9 +216,7 @@ public class Lig4 {
         }else{
             String[] decisaoOutro = mensagem.split(";");
             if(resposta.equals("S") && decisaoOutro[1].equals("S")){
-                if(getPeca() == 'X'){
-                    placar.excluirPlacar();
-                }
+                placar.excluirPlacar();
                 System.out.println("Placar excluído por decisão mútua.");
             }else{
                 System.out.println("Um jogador requisitou que o placar fosse mantido.");
