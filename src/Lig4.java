@@ -191,6 +191,7 @@ public class Lig4 {
                 // se alguém disse não, encerra o jogo de vez
                 janela.setStatus("Fim de Jogo. Um dos jogadores não quis continuar.");
                 jogoAtivo = false;
+                placar.excluirPlacar(); // exclui o placar caso os jogadores não queiram continuar
                 encerrarConexao();
             }
         }
@@ -208,15 +209,12 @@ public class Lig4 {
         rodadaAtual++;
         if (this.peca == 'X') {
             suaVez = (rodadaAtual % 2 != 0); // X joga nas rodadas impares
+            janela.setStatus(suaVez ? "Sol, sua vez de jogar." : "Sol, aguarde a jogada do oponente.");
         } else {
             suaVez = (rodadaAtual % 2 == 0);  // O joga nas rodadas pares
-        }
-        if(peca == 'X'){
-            janela.setStatus(suaVez ? "Sol, sua vez de jogar." : "Sol, aguarde a jogada do oponente.");
-        }else{
             janela.setStatus(suaVez ? "Lua, sua vez de jogar." : "Lua, aguarde a jogada do oponente.");
         }
-        
+       
         janela.atualizarPlacar();
     }
 
