@@ -59,7 +59,12 @@ public class Lig4 {
         this.peca = info[0].charAt(0);
         this.suaVez = Boolean.parseBoolean(info[1]);
         
-        janela.setStatus(suaVez ? "Sua vez de jogar." : "Aguarde a jogada do oponente.");
+        if(peca == 'X'){
+            janela.setStatus(suaVez ? "Sol, sua vez de jogar." : "Sol, aguarde a jogada do oponente.");
+        }else{
+            janela.setStatus(suaVez ? "Lua, sua vez de jogar." : "Lua, aguarde a jogada do oponente.");
+        }
+        
     }
 
     // esse método roda numa thread separada e fica SÓ escutando o que o servidor manda
@@ -103,7 +108,11 @@ public class Lig4 {
                 } else {
                     // se o jogo continua, passa a vez e avisa o jogador
                     suaVez = false;
-                    janela.setStatus("Aguarde a jogada do oponente.");
+                    if(peca == 'X'){
+                        janela.setStatus("Sol, aguarde a jogada do oponente.");
+                    }else{
+                        janela.setStatus("Lua, aguarde a jogada do oponente.");
+                    }
                 }
             } else {
                 janela.setStatus("Coluna cheia. Tente outra.");
@@ -145,7 +154,11 @@ public class Lig4 {
         } else {
             // se o jogo continua, agora é a nossa vez
             suaVez = true;
-            janela.setStatus("Sua vez de jogar.");
+            if(pecaOponente == 'X'){
+                janela.setStatus("Lua, sua vez de jogar.");
+            }else{
+                janela.setStatus("Sol, sua vez de jogar.");
+            }
         }
     }
 
@@ -198,7 +211,12 @@ public class Lig4 {
         } else {
             suaVez = (rodadaAtual % 2 == 0);  // O joga nas rodadas pares
         }
-        janela.setStatus(suaVez ? "Sua vez de jogar." : "Aguarde a jogada do oponente.");
+        if(peca == 'X'){
+            janela.setStatus(suaVez ? "Sol, sua vez de jogar." : "Sol, aguarde a jogada do oponente.");
+        }else{
+            janela.setStatus(suaVez ? "Lua, sua vez de jogar." : "Lua, aguarde a jogada do oponente.");
+        }
+        
         janela.atualizarPlacar();
     }
 

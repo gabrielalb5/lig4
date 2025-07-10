@@ -11,7 +11,7 @@ public class ServidorLig4 {
             System.out.println("Servidor Lig4 Inicializado\n");
 
             Socket jogadorX;
-            System.out.println("Esperando por Conexão (Jogador X)");
+            System.out.println("Esperando por Conexão (Jogador Sol)");
             jogadorX = servidor.accept();
             System.out.println("Conexão Recebida: " + jogadorX.toString() + ":" + jogadorX.getPort() + "\n");
 
@@ -24,7 +24,7 @@ public class ServidorLig4 {
             saidaJogadorX = new ObjectInputStream(jogadorX.getInputStream());
 
             Socket jogadorO;
-            System.out.println("Esperando por Conexão (Jogador O)");
+            System.out.println("Esperando por Conexão (Jogador Lua)");
             jogadorO = servidor.accept();
             System.out.println("Conexão Recebida: " + jogadorO.toString() + ":" + jogadorO.getPort() + "\n");
 

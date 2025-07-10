@@ -63,8 +63,7 @@ public class PainelTabuleiro extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // primeiro, desenha o fundo azul do tabuleiro
-        g.setColor(Color.BLUE);
+        g.setColor(new Color(34, 34, 34));
         g.fillRect(0, 0, getWidth(), getHeight());
 
         // aqui a gente calcula o tamanho de cada peça pra que o tabuleiro sempre ocupe o painel todo
@@ -80,7 +79,7 @@ public class PainelTabuleiro extends JPanel {
                 int y = linha * diametroPeca + margem;
                 
                 //  desenha sempre o buraco cinza, como se estivesse vazio
-                g.setColor(Color.LIGHT_GRAY);
+                g.setColor(new Color(60, 60, 60));
                 g.fillOval(x, y, diametroReal, diametroReal);
 
                 // verifica se tem alguma peça ('X' ou 'O') naquela posição
