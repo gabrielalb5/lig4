@@ -5,12 +5,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class Config{
+public class Config {
     private static String ip;
     private static int porta = -1;
-    
-    private Config(){}
-    
+
+    private Config() {}
+
     private static void readConfig() {        
         File file = new File("config.xml");
         if(file.exists()){            
@@ -32,15 +32,15 @@ public class Config{
         }
     }
 
-    public static String getIp(){
-        if (ip==null){
+    public static String getIp() {
+        if (ip == null) {
             readConfig();
         }
         return ip;
     }
-    
-    public static int getPorta(){
-        if(porta==-1){
+
+    public static int getPorta() {
+        if (porta == -1) {
             readConfig();
         }
         return porta;

@@ -1,12 +1,12 @@
 public class Tabuleiro {
-    private final int LINHAS;
-    private final int COLUNAS;
+    public static final int LINHAS = 6;
+    public static final int COLUNAS = 7;
     private final char[][] tabuleiro;
     
-    public Tabuleiro(int linhas, int colunas) {
-        this.LINHAS = linhas;
-        this.COLUNAS = colunas;
-        this.tabuleiro = new char[LINHAS][COLUNAS];
+    public Tabuleiro() {
+        //this.LINHAS = linhas;
+        //this.COLUNAS = colunas;
+        this.tabuleiro = new char[Tabuleiro.LINHAS][Tabuleiro.COLUNAS];
     }
     
     public void criarTabuleiro(){
@@ -15,6 +15,13 @@ public class Tabuleiro {
                 tabuleiro[i][j] = '.';
             }
         }
+    }
+
+    public char getPeca(int linha, int coluna) {
+        if (nosLimites(linha, coluna)) {
+            return tabuleiro[linha][coluna];
+        }
+        return ' '; 
     }
     
     public void imprimirTabuleiro(){
