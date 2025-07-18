@@ -32,22 +32,22 @@ O jogo é estruturado com base no modelo m,n,k (7,6,4), com regras reais de grav
 git clone https://github.com/gabrielalb5/lig4.git
 ```
 
-2. Abra o projeto preferencialmente no NetBeans (veja [Erros comuns](#erros-comuns) no fim dessa seção para configurar outras IDEs).
+2. Abra o projeto preferencialmente no NetBeans (em outra IDE talvez seja necessário realizar uma modificação. Veja [Erros comuns](#erros-comuns) no fim dessa seção).
 3. Descubra seu IP: abra seu terminal e digite ipconfig (prompt de comando no Windows)
 4. Copie seu endereço IPv4, que estará em uma linha semelhante a esta:
 ```
 Endereço IPv4. . . . . . . .  . . . . . . . : 192.168.0.0
 ```
 5. Abra o arquivo `config.xml` com um editor de texto e troque o valor de `ip` pelo número copiado no passo anterior. Salve e feche.
-6. Compile e execute a classe `Servidor.java` e em seguida `Cliente.java`
+6. Compile e execute a classe `ServidorLig4.java` e em seguida `ClienteLig4.java`
 
 #### Modos de Jogo
-- Multiplayer Local (mesmo computador): Execute duas instâncias da classe `Cliente.java` no mesmo computador.
-- Multiplayer em Rede (computadores diferentes): Um dos computadores deve executar o `Servidor.java`. Os demais devem apontar o IP no `config.xml` para o IP do servidor e estar conectados na mesma rede (Wi-Fi ou cabo).
+- Multiplayer Local (mesmo computador): Execute duas instâncias da classe `ClienteLig4.java` no mesmo computador.
+- Multiplayer em Rede (computadores diferentes): Um dos computadores deve executar o `ServidorLig4.java`. Os demais devem apontar o IP no `config.xml` para o IP do servidor e estar conectados na mesma rede (Wi-Fi ou cabo).
 
 #### Erros comuns
 - Rede Wi-Fi vs Cabo: Computadores conectados via Wi-Fi e Ethernet não se comunicam facilmente. Use o mesmo tipo de conexão em ambos.
-- IDE fora do NetBeans: Se estiver usando outra IDE, mova o arquivo `config.xml` da raiz do projeto para dentro da pasta `src`.
+- IDE fora do NetBeans: Se estiver usando outra IDE, e a conexão não encontrar o arquivo de configuração, mova o arquivo `config.xml` da raiz do projeto para dentro da pasta `src`.
 
 ### 🧑‍💻 Autores
 <a href="https://www.linkedin.com/in/eduardo-bonifacio-0a802b2a8/">Eduardo Bonifacio</a><br>
